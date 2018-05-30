@@ -115,6 +115,41 @@ class PersonsById(Resource):
             return jsonify({'error': 'Person not found.' + str(e)})
 
 
+class PersonsRank(Resource):
+    def get(self):
+        jsondata = []
+        conn = mysql.connect()
+        cursor = conn.cursor()
+        query = "select * from personspagerank;"
+        cursor.execute(query)
+        for val in cursor.fetchall():
+            vTmp = {}
+            vTmp['id'] = val[3]
+            vTmp['personid'] = val[0]
+            vTmp['pageid'] = val[1]
+            vTmp['rank'] = val[2]
+            jsondata.append(vTmp)
+        return jsonify(jsondata)
+
+
+class PersonsRankById(Resource):
+    def get(self, persons_id):
+        conn = mysql.connect()
+        query = "select * from personspagerank where ID =%d " % int(persons_id)
+        cursor = conn.cursor()
+        try:
+            cursor.execute(query)
+            for val in cursor.fetchall():
+                vTmp = {}
+                vTmp['id'] = val[3]
+                vTmp['personid'] = val[0]
+                vTmp['pageid'] = val[1]
+                vTmp['rank'] = val[2]
+            return jsonify(vTmp)
+        except Exception as e:
+            return jsonify({'error': 'Person not found.' + str(e)})
+
+
 class Sites(Resource):
     def get(self):
         jsondata = []
@@ -152,6 +187,8 @@ api.add_resource(Users, '/v1/users')
 api.add_resource(UsersByID, '/v1/users/<user_id>')
 api.add_resource(Persons, '/v1/persons')
 api.add_resource(PersonsById, '/v1/persons/<persons_id>')
+api.add_resource(PersonsRank, '/v1/persons/rank')
+api.add_resource(PersonsRankById, '/v1/persons/rank/<persons_id>')
 api.add_resource(Sites, '/v1/sites')
 api.add_resource(SiteByID, '/v1/sites/<site_id>')
 

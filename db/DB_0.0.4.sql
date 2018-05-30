@@ -66,7 +66,8 @@ CREATE TABLE IF NOT EXISTS `persons` (
 -- Экспортируемые данные не выделены.
 -- Дамп структуры для таблица searchandratewords.personspagerank
 CREATE TABLE IF NOT EXISTS `personspagerank` (
-  `PersonID` int(11) NOT NULL AUTO_INCREMENT,
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `PersonID` int(11) NOT NULL,
   `PageID` int(11) NOT NULL,
   `Rank` int(11) DEFAULT NULL,
   KEY `FK_personspagerank_persons` (`PersonID`),
