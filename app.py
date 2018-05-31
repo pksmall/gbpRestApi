@@ -134,8 +134,9 @@ class PersonsRank(Resource):
 
 class PersonsRankById(Resource):
     def get(self, persons_id):
+        jsondata = []
         conn = mysql.connect()
-        query = "select * from personspagerank where ID =%d " % int(persons_id)
+        query = "select * from personspagerank where PersonID =%d " % int(persons_id)
         cursor = conn.cursor()
         try:
             cursor.execute(query)
@@ -145,7 +146,8 @@ class PersonsRankById(Resource):
                 vTmp['personid'] = val[0]
                 vTmp['pageid'] = val[1]
                 vTmp['rank'] = val[2]
-            return jsonify(vTmp)
+                jsondata.append(vTmp)
+            return jsonify(jsondata)
         except Exception as e:
             return jsonify({'error': 'Person not found.' + str(e)})
 
@@ -177,7 +179,7 @@ class SiteByID(Resource):
                 result = {}
                 result['id'] = val[0]
                 result['addby'] = val[1]
-                result['siteDescription'] = val[1]
+                result['siteDescription'] = val[3]
             return jsonify(result)
         except Exception as e:
             return jsonify({'error': 'Site not found.' + str(e)})
