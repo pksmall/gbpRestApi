@@ -13,7 +13,7 @@ app.config['JSON_AS_ASCII'] = False
 app.config['MYSQL_DATABASE_USER'] = 'apiuser'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'PassToUserApi'
 app.config['MYSQL_DATABASE_DB'] = 'searchandratewords'
-app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+app.config['MYSQL_DATABASE_HOST'] = 'gbdb'
 mysql.init_app(app)
 
 
