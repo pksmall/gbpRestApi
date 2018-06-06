@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_restful import Resource, Api
 from flaskext.mysql import MySQL
+from static import *
 
 mysql = MySQL()
 
@@ -14,6 +15,12 @@ app.config['MYSQL_DATABASE_PASSWORD'] = 'PassToUserApi'
 app.config['MYSQL_DATABASE_DB'] = 'searchandratewords'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(app)
+
+
+class Info(Resource):
+    def get(self):
+        return jsonify(API_DESC)
+
 
 class Users(Resource):
     def get(self):
@@ -185,6 +192,7 @@ class SiteByID(Resource):
             return jsonify({'error': 'Site not found.' + str(e)})
 
 
+api.add_resource(Info, '/v1')
 api.add_resource(Users, '/v1/users')
 api.add_resource(UsersByID, '/v1/users/<user_id>')
 api.add_resource(Persons, '/v1/persons')
