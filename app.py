@@ -170,7 +170,7 @@ class Sites(Resource):
             vTmp = {}
             vTmp['id'] = val[0]
             vTmp['addby'] = val[1]
-            vTmp['siteDescription'] = val[2]
+            vTmp['siteDescription'] = val[3]
             jsondata.append(vTmp)
         return jsonify(jsondata)
 
