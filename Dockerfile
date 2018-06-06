@@ -4,7 +4,7 @@ FROM python:3
 RUN apt-get update -y
 
 #port to use app
-EXPOSE 80
+EXPOSE 5000
 
 # Add application to app dir
 ADD . /app

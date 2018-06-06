@@ -203,4 +203,4 @@ api.add_resource(Sites, '/v1/sites')
 api.add_resource(SiteByID, '/v1/sites/<site_id>')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True,host='0.0.0.0')
