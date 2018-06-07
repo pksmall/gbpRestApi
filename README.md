@@ -16,3 +16,5 @@ app's using python3.5+
 #### app start
 ```$ python app.py```
 
+#### get data
+```$ curl 127.0.0.1:5000/v1/persons/rank ```
