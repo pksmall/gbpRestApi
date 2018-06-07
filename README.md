@@ -5,14 +5,14 @@ app's using python3.5+
 
 ## run app 
 
-### git clone
+#### git clone
 ```$ git clone https://github.com/pksmall/gbpRestApi.git```
 
 
-### install requirements
+#### install requirements
 
 ```$ pip install -r requirements.txt```
 
-### app start
+#### app start
 ```$ python app.py```
 
