@@ -3,9 +3,15 @@ from modules.users import *
 from modules.persons import *
 from modules.sites import *
 
+
 class Info(Resource):
     def get(self):
         return jsonify(API_DESC)
+
+
+@app.errorhandler(404)
+def err404(self):
+    return jsonify(ERR404)
 
 
 api.add_resource(Info, '/v1')
@@ -19,4 +25,4 @@ api.add_resource(Sites, '/v1/sites')
 api.add_resource(SiteByID, '/v1/sites/<site_id>')
 
 if __name__ == '__main__':
-    app.run(debug=True,host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0')

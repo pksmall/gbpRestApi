@@ -1,6 +1,7 @@
 from flask import request, jsonify
 from modules.appdb import *
 
+
 class Users(Resource):
     def get(self):
         jsondata = []

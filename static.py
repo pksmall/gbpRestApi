@@ -1,3 +1,8 @@
+ERR404 = {
+        'success': '0',
+        'error': '404'
+    }
+
 API_DESC = [
         {
                 'api_url': '/v1/',

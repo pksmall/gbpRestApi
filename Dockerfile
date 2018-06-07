@@ -10,7 +10,7 @@ EXPOSE 5000
 ADD . /app
 WORKDIR /app
 
-# Install requrements
+# Install requirements
 RUN pip install -r /app/requirements.txt
 
 #run command
