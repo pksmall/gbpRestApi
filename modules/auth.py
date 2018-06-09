@@ -71,3 +71,32 @@ class Auth(Resource):
             return jsonify(vTmp)
         except Exception as e:
             return jsonify({'message': 'data not found. ' + str(e)})
+
+    def delete(self):
+        vTmp = {}
+        vTmp['success'] = 0
+
+        try:
+            if not request.json:
+                return jsonify(vTmp)
+            else:
+                token = request.json['token_auth']
+        except:
+            return jsonify(vTmp)
+
+        conn = mysql.connect()
+        cursor = conn.cursor()
+
+        query = "select * from users where token = '{}'".format(token)
+        cursor.execute(query)
+        try:
+            if cursor.rowcount == 1:
+                for userValue in cursor.fetchall():
+                    userId = userValue[0]
+                vTmp['success'] = 1
+                query = "UPDATE users SET token = NULL, tokenCreatedDate = NULL, tokenLastAccess = NULL WHERE ID = {}".format(userId)
+                cursor.execute(query)
+                conn.commit()
+            return jsonify(vTmp)
+        except Exception as e:
+            return jsonify({'message': 'data not found. ' + str(e)})
