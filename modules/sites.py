@@ -32,4 +32,4 @@ class SiteByID(Resource):
                 result['siteDescription'] = val[3]
             return jsonify(result)
         except Exception as e:
-            return jsonify({'error': 'Site not found.' + str(e)})
+            return jsonify({'message': 'Site not found.' + str(e)})

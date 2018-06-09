@@ -58,5 +58,5 @@ class UsersByID(Resource):
                 result['isadmin'] = val[2]
             return jsonify(result)
         except Exception as e:
-            return jsonify({'error': 'User not found.'})
+            return jsonify({'message': 'User not found.'})
 

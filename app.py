@@ -2,6 +2,7 @@ from static import *
 from modules.users import *
 from modules.persons import *
 from modules.sites import *
+from modules.auth import *
 
 
 class Info(Resource):
@@ -30,7 +31,7 @@ api.add_resource(PersonsRankDate, '/v1/persons/rank/date')
 api.add_resource(PersonsRankDateById, '/v1/persons/rank/<persons_id>/date')
 api.add_resource(Sites, '/v1/sites')
 api.add_resource(SiteByID, '/v1/sites/<site_id>')
-#api.add_resource(Auth, '/v1/auth')
+api.add_resource(Auth, '/v1/auth')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

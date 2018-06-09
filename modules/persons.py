@@ -40,7 +40,7 @@ class PersonsById(Resource):
                     result['keywords'].append(kTmp)
             return jsonify(result)
         except Exception as e:
-            return jsonify({'error': 'Person not found.' + str(e)})
+            return jsonify({'message': 'Person not found.' + str(e)})
 
 
 class PersonsRank(Resource):
@@ -77,7 +77,7 @@ class PersonsRankById(Resource):
                 jsondata.append(vTmp)
             return jsonify(jsondata)
         except Exception as e:
-            return jsonify({'error': 'Person not found.' + str(e)})
+            return jsonify({'message': 'Person not found.' + str(e)})
 
 
 class PersonsRankDate(Resource):
@@ -113,7 +113,7 @@ class PersonsRankDate(Resource):
                 jsondata.append(vTmp)
             return jsonify(jsondata)
         except Exception as e:
-            return jsonify({'error': 'data not found.' + str(e)})
+            return jsonify({'message': 'data not found.' + str(e)})
 
 
 class PersonsRankDateById(Resource):
@@ -150,4 +150,4 @@ class PersonsRankDateById(Resource):
                 jsondata.append(vTmp)
             return jsonify(jsondata)
         except Exception as e:
-            return jsonify({'error': 'data not found.' + str(e)})
+            return jsonify({'message': 'data not found.' + str(e)})
