@@ -10,20 +10,22 @@ class Auth(Resource):
 
     def post(self):
         vTmp = {}
+        vTmp['success'] = 0
 
-        if not request.json:
-            vTmp['success'] = 0
+        try:
+            if not request.json:
+                return jsonify(vTmp)
+            else:
+                login = request.json['user']
+                password = request.json['password']
+        except:
             return jsonify(vTmp)
-        else:
-            login = request.json['user']
-            password = request.json['password']
 
         conn = mysql.connect()
         cursor = conn.cursor()
 
         query = "select * from users where login = '{}' and password = '{}' and \
                     (token is NULL or tokenLastAccess < NOW() - INTERVAL 60 MINUTE);".format(login, password)
-        print(query)
         try:
             cursor.execute(query)
             if cursor.rowcount == 1:
@@ -35,20 +37,21 @@ class Auth(Resource):
                     tokenCreatedDate = now(), tokenLastAccess = now() WHERE ID = {}".format(vTmp['token_auth'], userId)
                 cursor.execute(query)
                 conn.commit()
-            else:
-                vTmp['success'] = 0
             return jsonify(vTmp)
         except Exception as e:
             return jsonify({'message': 'data not found. ' + str(e)})
 
     def patch(self):
         vTmp = {}
+        vTmp['success'] = 0
 
-        if not request.json:
-            vTmp['success'] = 0
+        try:
+            if not request.json:
+                return jsonify(vTmp)
+            else:
+                token = request.json['token_auth']
+        except:
             return jsonify(vTmp)
-        else:
-            token = request.json['token_auth']
 
         conn = mysql.connect()
         cursor = conn.cursor()
@@ -63,8 +66,6 @@ class Auth(Resource):
                 query = "UPDATE users SET tokenLastAccess = now() WHERE ID = {}".format(userId)
                 cursor.execute(query)
                 conn.commit()
-            else:
-                vTmp['success'] = 0
             return jsonify(vTmp)
         except Exception as e:
             return jsonify({'message': 'data not found. ' + str(e)})

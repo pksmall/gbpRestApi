@@ -33,6 +33,10 @@ class PersonsById(Resource):
                 result['name'] = val[1]
                 result['addby'] = val[2]
                 cursor.execute(key_qry)
+                kTmp = {}
+                kTmp['id'] = 0
+                kTmp['name'] = val[1]
+                result['keywords'].append(kTmp)
                 for (kid, kname) in cursor.fetchall():
                     kTmp = {}
                     kTmp['id'] = kid
