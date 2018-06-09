@@ -1,7 +1,7 @@
 from flask import request, jsonify
 from uuid import uuid4
 from modules.appdb import *
-
+from static import  LOGINTIME
 
 class Auth(Resource):
     def getToken(self):
@@ -25,12 +25,13 @@ class Auth(Resource):
         cursor = conn.cursor()
 
         query = "select * from users where login = '{}' and password = '{}' and \
-                    (token is NULL or tokenLastAccess < NOW() - INTERVAL 60 MINUTE);".format(login, password)
+                    (token is NULL or tokenLastAccess < NOW() - INTERVAL {} MINUTE);".format(login, password, LOGINTIME)
         try:
             cursor.execute(query)
             if cursor.rowcount == 1:
                 for userValue in cursor.fetchall():
                     userId = userValue[0]
+                vTmp['user_id'] = userId
                 vTmp['success'] = 1
                 vTmp['token_auth'] = self.getToken()
                 query = "UPDATE users SET token = '{}', \
@@ -56,7 +57,7 @@ class Auth(Resource):
         conn = mysql.connect()
         cursor = conn.cursor()
 
-        query = "select * from users where token = '{}' and tokenLastAccess > NOW() - INTERVAL 60 MINUTE;".format(token)
+        query = "select * from users where token = '{}' and tokenLastAccess > NOW() - INTERVAL {} MINUTE;".format(token, LOGINTIME)
         cursor.execute(query)
         try:
             if cursor.rowcount == 1:

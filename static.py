@@ -1,3 +1,5 @@
+LOGINTIME = 1
+
 ERR404 = {
         'success': '0',
         'message': '404'
