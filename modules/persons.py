@@ -78,3 +78,76 @@ class PersonsRankById(Resource):
             return jsonify(jsondata)
         except Exception as e:
             return jsonify({'error': 'Person not found.' + str(e)})
+
+
+class PersonsRankDate(Resource):
+    def get(self):
+        jsondata = []
+        conn = mysql.connect()
+
+        _from = request.args.get('_from', 1)
+        _till = request.args.get('_till', 1)
+
+        query = "select * from persons as ps left join personspagerank as ppr ON ppr.`PersonID` = ps.ID left join pages \
+                    as pg ON pg.ID = ppr.PageID left join sites as st ON st.`ID` = pg.`siteID` \
+                where DATE(pg.`lastScanDate`) >=  '{}' AND DATE(pg.lastScanDAte) <= '{}'".format(_from, _till)
+        cursor = conn.cursor()
+        try:
+            cursor.execute(query)
+            for val in cursor.fetchall():
+                vTmp = {}
+                vTmp['person_id'] = val[0]
+                vTmp['person_name'] = val[1]
+                vTmp['person_addby'] = val[2]
+                vTmp['page_id'] = val[4]
+                vTmp['rank'] = val[5]
+                vTmp['person_page_id'] = val[7]
+                vTmp['page_url'] = val[8]
+                vTmp['page_site_id'] = val[9]
+                vTmp['site_found_date'] = val[10]
+                vTmp['site_last_scan_date'] = val[11]
+                vTmp['site_id'] = val[12]
+                vTmp['site_name'] = val[13]
+                vTmp['site_addby'] = val[14]
+                vTmp['site_description'] = val[15]
+                jsondata.append(vTmp)
+            return jsonify(jsondata)
+        except Exception as e:
+            return jsonify({'error': 'data not found.' + str(e)})
+
+
+class PersonsRankDateById(Resource):
+    def get(self, persons_id):
+        jsondata = []
+        conn = mysql.connect()
+
+        _from = request.args.get('_from', 1)
+        _till = request.args.get('_till', 1)
+
+        query = "select * from persons as ps left join personspagerank as ppr ON ppr.`PersonID` = ps.ID left join pages \
+                    as pg ON pg.ID = ppr.PageID left join sites as st ON st.`ID` = pg.`siteID` \
+                where DATE(pg.`lastScanDate`) >=  '{}' AND DATE(pg.lastScanDAte) <= '{}' and ps.ID = {}".format(_from, _till, persons_id)
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute(query)
+            for val in cursor.fetchall():
+                vTmp = {}
+                vTmp['person_id'] = val[0]
+                vTmp['person_name'] = val[1]
+                vTmp['person_addby'] = val[2]
+                vTmp['page_id'] = val[4]
+                vTmp['rank'] = val[5]
+                vTmp['person_page_id'] = val[7]
+                vTmp['page_url'] = val[8]
+                vTmp['page_site_id'] = val[9]
+                vTmp['site_found_date'] = val[10]
+                vTmp['site_last_scan_date'] = val[11]
+                vTmp['site_id'] = val[12]
+                vTmp['site_name'] = val[13]
+                vTmp['site_addby'] = val[14]
+                vTmp['site_description'] = val[15]
+                jsondata.append(vTmp)
+            return jsonify(jsondata)
+        except Exception as e:
+            return jsonify({'error': 'data not found.' + str(e)})

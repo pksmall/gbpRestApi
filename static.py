@@ -1,7 +1,13 @@
 ERR404 = {
         'success': '0',
-        'error': '404'
+        'message': '404'
     }
+
+ERR500 = {
+        'success': '0',
+        'message': '500'
+    }
+
 
 API_DESC = [
         {
