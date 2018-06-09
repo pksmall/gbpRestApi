@@ -17,7 +17,9 @@ class Auth(Resource):
         conn = mysql.connect()
         cursor = conn.cursor()
 
-        query = "select * from users where login = '{}' and password = '{}' and token is NULL;".format(login, password)
+        query = "select * from users where login = '{}' and password = '{}' and \
+                    (token is NULL or tokenLastAccess < NOW() - INTERVAL 60 MINUTE);".format(login, password)
+        print(query)
         try:
             cursor.execute(query)
             if cursor.rowcount == 1:
@@ -44,7 +46,6 @@ class Auth(Resource):
         cursor = conn.cursor()
 
         query = "select * from users where token = '{}' and tokenLastAccess > NOW() - INTERVAL 60 MINUTE;".format(token)
-        print(query)
         cursor.execute(query)
         try:
             if cursor.rowcount == 1:

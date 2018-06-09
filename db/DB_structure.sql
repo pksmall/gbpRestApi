@@ -44,14 +44,14 @@ CREATE TABLE IF NOT EXISTS `log` (
 CREATE TABLE IF NOT EXISTS `pages` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `siteID` int(11) NOT NULL,
-  `URL` varchar(100) NOT NULL,
+  `URL` varchar(1024) NOT NULL,
   `foundDateTime` datetime NOT NULL DEFAULT current_timestamp(),
   `lastScanDate` datetime DEFAULT NULL,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `URL` (`URL`),
   KEY `FK_pages_sites` (`siteID`),
   CONSTRAINT `FK_pages_sites` FOREIGN KEY (`siteID`) REFERENCES `sites` (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- Экспортируемые данные не выделены.
 -- Дамп структуры для таблица searchandratewords.persons
@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `persons` (
   PRIMARY KEY (`ID`),
   KEY `FK_persons_users` (`addedBy`),
   CONSTRAINT `FK_persons_users` FOREIGN KEY (`addedBy`) REFERENCES `users` (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Экспортируемые данные не выделены.
 -- Дамп структуры для таблица searchandratewords.personspagerank
@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS `personspagerank` (
   KEY `FK_personspagerank_persons` (`PersonID`),
   CONSTRAINT `FK_personspagerank_pages` FOREIGN KEY (`PageID`) REFERENCES `pages` (`ID`),
   CONSTRAINT `FK_personspagerank_persons` FOREIGN KEY (`PersonID`) REFERENCES `persons` (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- Экспортируемые данные не выделены.
 -- Дамп структуры для таблица searchandratewords.sites
@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   KEY `FK_users_users` (`parentID`),
   UNIQUE KEY `token` (`token`),
   CONSTRAINT `FK_users_users` FOREIGN KEY (`parentID`) REFERENCES `users` (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- Экспортируемые данные не выделены.
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
