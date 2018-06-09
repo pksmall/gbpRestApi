@@ -63,6 +63,7 @@ class Auth(Resource):
             if cursor.rowcount == 1:
                 for userValue in cursor.fetchall():
                     userId = userValue[0]
+                vTmp['user_id'] = userId
                 vTmp['success'] = 1
                 query = "UPDATE users SET tokenLastAccess = now() WHERE ID = {}".format(userId)
                 cursor.execute(query)
