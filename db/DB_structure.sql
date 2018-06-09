@@ -43,8 +43,8 @@ CREATE TABLE IF NOT EXISTS `log` (
 -- Дамп структуры для таблица searchandratewords.pages
 CREATE TABLE IF NOT EXISTS `pages` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `URL` varchar(1024) NOT NULL,
   `siteID` int(11) NOT NULL,
+  `URL` varchar(700) NOT NULL,
   `foundDateTime` datetime NOT NULL DEFAULT current_timestamp(),
   `lastScanDate` datetime DEFAULT NULL,
   PRIMARY KEY (`ID`),
@@ -97,7 +97,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `login` varchar(2048) NOT NULL,
   `password` varchar(2048) NOT NULL,
   `email` varchar(2048) NOT NULL,
-  `token` varchar(1024) DEFAULT NULL,
+  `token` varchar(700) DEFAULT NULL,
   `tokenCreatedDate` DATETIME DEFAULT current_timestamp(),
   `tokenLastAccess` DATETIME DEFAULT current_timestamp(),
   PRIMARY KEY (`ID`),
