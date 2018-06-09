@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS `log` (
 CREATE TABLE IF NOT EXISTS `pages` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `siteID` int(11) NOT NULL,
-  `URL` varchar(700) NOT NULL,
+  `URL` varchar(400) NOT NULL,
   `foundDateTime` datetime NOT NULL DEFAULT current_timestamp(),
   `lastScanDate` datetime DEFAULT NULL,
   PRIMARY KEY (`ID`),
@@ -97,7 +97,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `login` varchar(2048) NOT NULL,
   `password` varchar(2048) NOT NULL,
   `email` varchar(2048) NOT NULL,
-  `token` varchar(700) DEFAULT NULL,
+  `token` varchar(400) DEFAULT NULL,
   `tokenCreatedDate` DATETIME DEFAULT current_timestamp(),
   `tokenLastAccess` DATETIME DEFAULT current_timestamp(),
   PRIMARY KEY (`ID`),
