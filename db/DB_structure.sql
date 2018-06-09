@@ -6,7 +6,7 @@
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET NAMES utf8 */;
+/*!40101 SET NAMES utf8mb4 */;
 /*!50503 SET NAMES utf8mb4 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
@@ -45,8 +45,8 @@ CREATE TABLE IF NOT EXISTS `pages` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `URL` varchar(1024) NOT NULL,
   `siteID` int(11) NOT NULL,
-  `foundDateTime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `lastScanDate` datetime DEFAULT NULL,
+  `foundDateTime` datetime NOT NULL DEFAULT current_timestamp(),
+  `lastScanDate` datetime DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`ID`),
   UNIQUE KEY `URL` (`URL`),
   KEY `FK_pages_sites` (`siteID`),
