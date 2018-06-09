@@ -97,8 +97,12 @@ CREATE TABLE IF NOT EXISTS `users` (
   `login` varchar(2048) NOT NULL,
   `password` varchar(2048) NOT NULL,
   `email` varchar(2048) NOT NULL,
+  `token` varchar(1024) DEFAULT NULL,
+  `tokenCreatedDate` DATETIME DEFAULT '0000-00-00 00:00:00',
+  `tokenLastAccess` DATETIME DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`ID`),
   KEY `FK_users_users` (`parentID`),
+  UNIQUE KEY `token` (`token`),
   CONSTRAINT `FK_users_users` FOREIGN KEY (`parentID`) REFERENCES `users` (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
