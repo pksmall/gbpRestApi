@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS `pages` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `URL` varchar(1024) NOT NULL,
   `siteID` int(11) NOT NULL,
-  `foundDateTime` datetime NOT NULL DEFAULT current_timestamp(),
+  `foundDateTime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `lastScanDate` datetime DEFAULT NULL,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `URL` (`URL`),
