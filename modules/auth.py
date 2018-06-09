@@ -11,8 +11,12 @@ class Auth(Resource):
     def post(self):
         vTmp = {}
 
-        login = request.json['user']
-        password = request.json['password']
+        if not request.json:
+            vTmp['success'] = 0
+            return jsonify(vTmp)
+        else:
+            login = request.json['user']
+            password = request.json['password']
 
         conn = mysql.connect()
         cursor = conn.cursor()
@@ -40,7 +44,11 @@ class Auth(Resource):
     def patch(self):
         vTmp = {}
 
-        token = request.json['token_auth']
+        if not request.json:
+            vTmp['success'] = 0
+            return jsonify(vTmp)
+        else:
+            token = request.json['token_auth']
 
         conn = mysql.connect()
         cursor = conn.cursor()
