@@ -145,6 +145,174 @@ class Persons(Resource):
                 conn = mysql.connect()
                 cursor = conn.cursor()
 
+                query = "select * from users where token = '{}' and " \
+                        "tokenLastAccess > NOW() - INTERVAL {} MINUTE;".format(token, LOGINTIME)
+                try:
+                    cursor.execute(query)
+                    if cursor.rowcount == 1:
+                        for userValue in cursor.fetchall():
+                            parent_id = userValue[0]
+                    else:
+                        return jsonify(vTmp)
+                except Exception as e:
+                    return jsonify(vTmp)
+        except Exception as e:
+            return jsonify(vTmp)
+
+        if 'person_id' in req_json:
+            person_id = request.json['person_id']
+        else:
+            return jsonify(vTmp)
+
+        try:
+            query = "SELECT * FROM persons WHERE ID = {}".format(person_id)
+            cursor.execute(query)
+            if cursor.rowcount >= 1:
+                query = "DELETE FROM persons WHERE ID = {}".format(person_id)
+                cursor.execute(query)
+                conn.commit()
+            else:
+                return jsonify(vTmp)
+
+            query = "UPDATE users SET token = '{}', tokenLastAccess = now() WHERE ID = {}".format(token, parent_id)
+            cursor.execute(query)
+            conn.commit()
+
+            vTmp['success'] = 1
+            return jsonify(vTmp)
+        except Exception as e:
+            vTmp['exception'] = str(e)
+            return jsonify(vTmp)
+
+
+class PersonsKeywords(Resource):
+    def post(self):
+        vTmp = {}
+        vTmp['success'] = 0
+        parent_id = 0
+
+        try:
+            if not request.json:
+                return jsonify(vTmp)
+            else:
+                token = request.json['token_auth']
+
+                conn = mysql.connect()
+                cursor = conn.cursor()
+
+                query = "select * from users where token = '{}' and " \
+                        "tokenLastAccess > NOW() - INTERVAL {} MINUTE;".format(token, LOGINTIME)
+                print(query)
+                try:
+                    cursor.execute(query)
+                    if cursor.rowcount == 1:
+                        for userValue in cursor.fetchall():
+                            parent_id = userValue[0]
+                    else:
+                        return jsonify(vTmp)
+                except Exception as e:
+                    return jsonify(vTmp)
+        except Exception as e:
+            return jsonify(vTmp)
+
+        try:
+            name = request.json['name']
+        except Exception as e:
+            return jsonify(vTmp)
+
+        try:
+            query = "insert into persons (addedBy, name) values('{}','{}')".format(parent_id, name)
+            print(query)
+            cursor.execute(query)
+            conn.commit()
+            vTmp["person_id"] = cursor.lastrowid
+
+            query = "UPDATE users SET token = '{}', tokenLastAccess = now() WHERE ID = {}".format(token, parent_id)
+            cursor.execute(query)
+            conn.commit()
+
+            vTmp['success'] = 1
+            return jsonify(vTmp)
+        except Exception as e:
+            vTmp['exception'] = str(e)
+            return jsonify(vTmp)
+
+    def patch(self):
+        vTmp = {}
+        vTmp['success'] = 0
+        parent_id = 0
+
+        print(request.json)
+        try:
+            if not request.json:
+                return jsonify(vTmp)
+            else:
+                token = request.json['token_auth']
+
+                conn = mysql.connect()
+                cursor = conn.cursor()
+
+                query = "select * from users where token = '{}' and " \
+                        "tokenLastAccess > NOW() - INTERVAL {} MINUTE;".format(token, LOGINTIME)
+                try:
+                    cursor.execute(query)
+                    if cursor.rowcount == 1:
+                        for userValue in cursor.fetchall():
+                            parent_id = userValue[0]
+                    else:
+                        return jsonify(vTmp)
+                except Exception as e:
+                    return jsonify(vTmp)
+        except Exception as e:
+            return jsonify(vTmp)
+
+        try:
+            name = request.json['name']
+            person_id = request.json['person_id']
+        except:
+            return jsonify(vTmp)
+
+        try:
+            query = "SELECT * FROM persons WHERE ID = {}".format(person_id)
+            cursor.execute(query)
+            if cursor.rowcount == 0:
+                return jsonify(vTmp)
+
+            query = "UPDATE persons SET name = '{}' WHERE ID = {} ".format(name, person_id)
+            print(query)
+            cursor.execute(query)
+            conn.commit()
+
+            query = "UPDATE users SET token = '{}', tokenLastAccess = now() WHERE ID = {}".format(token, parent_id)
+            cursor.execute(query)
+            conn.commit()
+
+            vTmp['success'] = 1
+            return jsonify(vTmp)
+        except Exception as e:
+            vTmp['exception'] = str(e)
+            return jsonify(vTmp)
+
+    def delete(self):
+        vTmp = {}
+        vTmp['success'] = 0
+        parent_id = 0
+
+        print(request.json)
+        try:
+            if not request.json:
+                return jsonify(vTmp)
+            else:
+                req_json = request.json
+
+                if 'token_auth' in req_json:
+                    token = request.json['token_auth']
+                else:
+                    return jsonify(vTmp)
+
+                conn = mysql.connect()
+                cursor = conn.cursor()
+
                 query = "select * from users where token = '{}' and isAdmin = 1 and " \
                         "tokenLastAccess > NOW() - INTERVAL {} MINUTE;".format(token, LOGINTIME)
                 try:
