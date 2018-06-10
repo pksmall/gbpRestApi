@@ -16,6 +16,7 @@ class Users(Resource):
             vTmp['login'] = val[3]
             vTmp['email'] = val[5]
             vTmp['isadmin'] = val[2]
+            vTmp['addby'] = val[1]
             jsondata.append(vTmp)
         return jsonify(jsondata)
 
