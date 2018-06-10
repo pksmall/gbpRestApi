@@ -74,7 +74,6 @@ class Persons(Resource):
         vTmp['success'] = 0
         parent_id = 0
 
-        print(request.json)
         try:
             if not request.json:
                 return jsonify(vTmp)
@@ -130,7 +129,6 @@ class Persons(Resource):
         vTmp['success'] = 0
         parent_id = 0
 
-        print(request.json)
         try:
             if not request.json:
                 return jsonify(vTmp)
@@ -190,6 +188,7 @@ class PersonsKeywords(Resource):
         vTmp = {}
         vTmp['success'] = 0
         parent_id = 0
+        """ {"Ким Чин Ыну", "Ким Чин Ына", "Ким Чин Ыном","Ким Чин Ынамом"  } """
 
         try:
             if not request.json:
@@ -211,21 +210,27 @@ class PersonsKeywords(Resource):
                     else:
                         return jsonify(vTmp)
                 except Exception as e:
+                    vTmp['exception'] = str(e)
                     return jsonify(vTmp)
         except Exception as e:
+            vTmp['exception'] = str(e)
             return jsonify(vTmp)
 
         try:
-            name = request.json['name']
+            person_id = request.json['person_id']
+            keywords = request.json['keywords']
         except Exception as e:
             return jsonify(vTmp)
 
         try:
-            query = "insert into persons (addedBy, name) values('{}','{}')".format(parent_id, name)
-            print(query)
-            cursor.execute(query)
-            conn.commit()
-            vTmp["person_id"] = cursor.lastrowid
+            keyIDs = []
+            for key in keywords:
+                query = "insert into keywords (personID, name) values('{}','{}')".format(person_id, keywords[key])
+                print(query)
+                cursor.execute(query)
+                conn.commit()
+                keyIDs.append(cursor.lastrowid)
+            vTmp["keywords_id"] = keyIDs
 
             query = "UPDATE users SET token = '{}', tokenLastAccess = now() WHERE ID = {}".format(token, parent_id)
             cursor.execute(query)
@@ -242,7 +247,6 @@ class PersonsKeywords(Resource):
         vTmp['success'] = 0
         parent_id = 0
 
-        print(request.json)
         try:
             if not request.json:
                 return jsonify(vTmp)
@@ -268,17 +272,17 @@ class PersonsKeywords(Resource):
 
         try:
             name = request.json['name']
-            person_id = request.json['person_id']
+            keyword_id = request.json['keyword_id']
         except:
             return jsonify(vTmp)
 
         try:
-            query = "SELECT * FROM persons WHERE ID = {}".format(person_id)
+            query = "SELECT * FROM keywords WHERE ID = {}".format(keyword_id)
             cursor.execute(query)
             if cursor.rowcount == 0:
                 return jsonify(vTmp)
 
-            query = "UPDATE persons SET name = '{}' WHERE ID = {} ".format(name, person_id)
+            query = "UPDATE keywords SET name = '{}' WHERE ID = {} ".format(name, keyword_id)
             print(query)
             cursor.execute(query)
             conn.commit()
@@ -298,7 +302,6 @@ class PersonsKeywords(Resource):
         vTmp['success'] = 0
         parent_id = 0
 
-        print(request.json)
         try:
             if not request.json:
                 return jsonify(vTmp)
@@ -313,7 +316,7 @@ class PersonsKeywords(Resource):
                 conn = mysql.connect()
                 cursor = conn.cursor()
 
-                query = "select * from users where token = '{}' and isAdmin = 1 and " \
+                query = "select * from users where token = '{}' and " \
                         "tokenLastAccess > NOW() - INTERVAL {} MINUTE;".format(token, LOGINTIME)
                 try:
                     cursor.execute(query)
@@ -327,16 +330,16 @@ class PersonsKeywords(Resource):
         except Exception as e:
             return jsonify(vTmp)
 
-        if 'person_id' in req_json:
-            person_id = request.json['person_id']
+        if 'keyword_id' in req_json:
+            keyword_id = request.json['keyword_id']
         else:
             return jsonify(vTmp)
 
         try:
-            query = "SELECT * FROM persons WHERE ID = {}".format(person_id)
+            query = "SELECT * FROM keywords WHERE ID = {}".format(keyword_id)
             cursor.execute(query)
             if cursor.rowcount >= 1:
-                query = "DELETE FROM persons WHERE ID = {}".format(person_id)
+                query = "DELETE FROM keywords WHERE ID = {}".format(keyword_id)
                 cursor.execute(query)
                 conn.commit()
             else:
@@ -378,8 +381,8 @@ class PersonsById(Resource):
                     kTmp['name'] = kname
                     result['keywords'].append(kTmp)
             return jsonify(result)
-        except Exception as e:
-            return jsonify({'message': 'Person not found.' + str(e)})
+        except:
+            return jsonify({'message': 'Person not found.', "success": 0})
 
 
 class PersonsRank(Resource):
@@ -416,7 +419,7 @@ class PersonsRankById(Resource):
                 jsondata.append(vTmp)
             return jsonify(jsondata)
         except Exception as e:
-            return jsonify({'message': 'Person not found.' + str(e)})
+            return jsonify({'message': 'Person not found.', "success": 0})
 
 
 class PersonsRankDate(Resource):
@@ -452,7 +455,7 @@ class PersonsRankDate(Resource):
                 jsondata.append(vTmp)
             return jsonify(jsondata)
         except Exception as e:
-            return jsonify({'message': 'data not found.' + str(e)})
+            return jsonify({'message': 'data not found.', "success": 0})
 
 
 class PersonsRankDateById(Resource):
@@ -489,4 +492,4 @@ class PersonsRankDateById(Resource):
                 jsondata.append(vTmp)
             return jsonify(jsondata)
         except Exception as e:
-            return jsonify({'message': 'data not found.' + str(e)})
+            return jsonify({'message': 'data not found.', "success": 0})
