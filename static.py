@@ -1,4 +1,4 @@
-LOGINTIME = 3
+LOGINTIME = 30
 
 ERR404 = {
         'success': '0',

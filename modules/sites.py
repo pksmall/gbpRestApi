@@ -12,6 +12,7 @@ class Sites(Resource):
         for val in cursor.fetchall():
             vTmp = {}
             vTmp['id'] = val[0]
+            vTmp['addby'] = val[2]
             vTmp['name'] = val[1]
             vTmp['siteDescription'] = val[3]
             jsondata.append(vTmp)
@@ -210,7 +211,8 @@ class SiteByID(Resource):
             for val in cursor.fetchall():
                 result = {}
                 result['id'] = val[0]
-                result['addby'] = val[1]
+                result['addby'] = val[2]
+                result['name'] = val[1]
                 result['siteDescription'] = val[3]
             return jsonify(result)
         except Exception as e:

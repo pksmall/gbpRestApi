@@ -232,6 +232,7 @@ class UsersByID(Resource):
                 result['login'] = val[3]
                 result['email'] = val[5]
                 result['isadmin'] = val[2]
+                result['addby'] = val[1]
             return jsonify(result)
         except:
             return jsonify({'message': 'User not found.'})
