@@ -62,6 +62,7 @@ class Users(Resource):
             print(query)
             cursor.execute(query)
             conn.commit()
+            vTmp["user_id"] = cursor.lastrowid
 
             query = "UPDATE users SET token = '{}', tokenLastAccess = now() WHERE ID = {}".format(token, parent_id)
             cursor.execute(query)
