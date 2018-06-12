@@ -52,6 +52,7 @@ class Sites(Resource):
         try:
             name = request.json['name']
             description = request.json['description']
+            pageURL = request.json['pageURL']
         except Exception as e:
             vTmp['exception'] = str(e)
             return jsonify(vTmp)
@@ -62,6 +63,10 @@ class Sites(Resource):
             cursor.execute(query)
             conn.commit()
             vTmp["site_id"] = cursor.lastrowid
+
+            query = "insert into pages (URL, siteID, foundDateTime) values({}, '{}',  now())".format(pageURL, vTmp['site_id'])
+            cursor.execute(query)
+            conn.commit()
 
             query = "UPDATE users SET token = '{}', tokenLastAccess = now() WHERE ID = {}".format(token, parent_id)
             cursor.execute(query)
