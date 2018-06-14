@@ -387,71 +387,143 @@ class PersonsById(Resource):
 
 class PersonsRank(Resource):
     def get(self):
+        vTmp = {}
         jsondata = []
+        vTmp['success'] = 0
+
         conn = mysql.connect()
         cursor = conn.cursor()
-        query = "select * from personspagerank;"
+        groupby = request.args.get("groupby", "")
+        siteid = int(request.args.get("siteID", 0))
+
+        if groupby == 'siteID':
+            if siteid > 0:
+               where = " WHERE st.ID = %d" % int(siteid)
+            else:
+                where = ""
+            query = "select ps.*, st.*, sum(ppr.Rank) as rank from persons as ps left join personspagerank as ppr " \
+                  "ON ppr.`PersonID` = ps.ID left join pages as pg ON pg.ID = ppr.PageID left join sites as st " \
+                  "ON st.`ID` = pg.`siteID`" + where + " group by ps.ID, ppr.`PersonID`, st.ID"
+        else:
+            query = "select * from personspagerank;"
+
         cursor.execute(query)
         for val in cursor.fetchall():
             vTmp = {}
-            vTmp['id'] = val[3]
-            vTmp['personid'] = val[0]
-            vTmp['pageid'] = val[1]
-            vTmp['rank'] = val[2]
+            if groupby:
+                vTmp['id'] = val[0]
+                vTmp['person_name'] = val[1]
+                vTmp['person_addby'] = val[2]
+                vTmp['site_id'] = val[3]
+                vTmp['site_name'] = val[4]
+                vTmp['site_addby'] = val[5]
+                vTmp['person_rank'] = str(val[7])
+            else:
+                vTmp['id'] = val[3]
+                vTmp['personid'] = val[0]
+                vTmp['pageid'] = val[1]
+                vTmp['rank'] = val[2]
             jsondata.append(vTmp)
         return jsonify(jsondata)
 
 
 class PersonsRankById(Resource):
     def get(self, persons_id):
+        vTmp = {}
         jsondata = []
+        vTmp['success'] = 0
+
+        groupby = request.args.get("groupby", "")
+        siteid = int(request.args.get("siteID", 0))
         conn = mysql.connect()
-        query = "select * from personspagerank where PersonID =%d " % int(persons_id)
         cursor = conn.cursor()
+        if groupby == 'siteID':
+            where = " WHERE "
+            if siteid > 0:
+                where = where + "st.ID = %d AND " % int(siteid)
+
+            where = where + " ppr.PersonID = %d" % int(persons_id)
+            query = "select ps.*, st.*, sum(ppr.Rank) as rank from persons as ps left join personspagerank as ppr " \
+                  "ON ppr.`PersonID` = ps.ID left join pages as pg ON pg.ID = ppr.PageID left join sites as st " \
+                  "ON st.`ID` = pg.`siteID`" + where + " group by ps.ID, ppr.`PersonID`, st.ID"
+        else:
+            query = "select * from personspagerank where PersonID =%d " % int(persons_id)
+
+        print(query)
         try:
             cursor.execute(query)
             for val in cursor.fetchall():
                 vTmp = {}
-                vTmp['id'] = val[3]
-                vTmp['personid'] = val[0]
-                vTmp['pageid'] = val[1]
-                vTmp['rank'] = val[2]
+                if groupby:
+                    vTmp['id'] = val[0]
+                    vTmp['person_name'] = val[1]
+                    vTmp['person_addby'] = val[2]
+                    vTmp['site_id'] = val[3]
+                    vTmp['site_name'] = val[4]
+                    vTmp['site_addby'] = val[5]
+                    vTmp['person_rank'] = str(val[7])
+                else:
+                    vTmp['id'] = val[3]
+                    vTmp['personid'] = val[0]
+                    vTmp['pageid'] = val[1]
+                    vTmp['rank'] = val[2]
                 jsondata.append(vTmp)
             return jsonify(jsondata)
         except Exception as e:
-            return jsonify({'message': 'Person not found.', "success": 0})
+            return jsonify({'message': 'Person not found.' + str(e), "success": 0})
 
 
 class PersonsRankDate(Resource):
     def get(self):
+        vTmp = {}
         jsondata = []
-        conn = mysql.connect()
+        vTmp['success'] = 0
 
+        groupby = request.args.get("groupby", "")
+        siteid = int(request.args.get("siteID", 0))
         _from = request.args.get('_from', 1)
         _till = request.args.get('_till', 1)
-
-        query = "select * from persons as ps left join personspagerank as ppr ON ppr.`PersonID` = ps.ID left join pages \
-                    as pg ON pg.ID = ppr.PageID left join sites as st ON st.`ID` = pg.`siteID` \
-                where DATE(pg.`lastScanDate`) >=  '{}' AND DATE(pg.lastScanDAte) <= '{}'".format(_from, _till)
+        conn = mysql.connect()
         cursor = conn.cursor()
+        if groupby == 'siteID':
+            where = " WHERE "
+            if siteid > 0:
+                where = where + "st.ID = %d AND " % int(siteid)
+            where = where + " pg.`lastScanDate` BETWEEN '{}' AND '{}' ".format(_from, _till)
+            query = "select ps.*, st.*, sum(ppr.Rank) as rank from persons as ps left join personspagerank as ppr " \
+                  "ON ppr.`PersonID` = ps.ID left join pages as pg ON pg.ID = ppr.PageID left join sites as st " \
+                  "ON st.`ID` = pg.`siteID`" + where + " group by ps.ID, ppr.`PersonID`, st.ID"
+        else:
+           query = "select * from persons as ps left join personspagerank as ppr ON ppr.`PersonID` = ps.ID left join pages \
+                    as pg ON pg.ID = ppr.PageID left join sites as st ON st.`ID` = pg.`siteID` \
+                where pg.`lastScanDate` BETWEEN '{}' AND '{}'".format(_from, _till)
         try:
             cursor.execute(query)
             for val in cursor.fetchall():
                 vTmp = {}
-                vTmp['person_id'] = val[0]
-                vTmp['person_name'] = val[1]
-                vTmp['person_addby'] = val[2]
-                vTmp['page_id'] = val[4]
-                vTmp['rank'] = val[5]
-                vTmp['person_page_id'] = val[7]
-                vTmp['page_url'] = val[8]
-                vTmp['page_site_id'] = val[9]
-                vTmp['site_found_date'] = val[10]
-                vTmp['site_last_scan_date'] = val[11]
-                vTmp['site_id'] = val[12]
-                vTmp['site_name'] = val[13]
-                vTmp['site_addby'] = val[14]
-                vTmp['site_description'] = val[15]
+                if groupby:
+                    vTmp['id'] = val[0]
+                    vTmp['person_name'] = val[1]
+                    vTmp['person_addby'] = val[2]
+                    vTmp['site_id'] = val[3]
+                    vTmp['site_name'] = val[4]
+                    vTmp['site_addby'] = val[5]
+                    vTmp['person_rank'] = str(val[7])
+                else:
+                    vTmp['person_id'] = val[0]
+                    vTmp['person_name'] = val[1]
+                    vTmp['person_addby'] = val[2]
+                    vTmp['page_id'] = val[4]
+                    vTmp['rank'] = val[5]
+                    vTmp['person_page_id'] = val[7]
+                    vTmp['page_url'] = val[8]
+                    vTmp['page_site_id'] = val[9]
+                    vTmp['site_found_date'] = val[10]
+                    vTmp['site_last_scan_date'] = val[11]
+                    vTmp['site_id'] = val[12]
+                    vTmp['site_name'] = val[13]
+                    vTmp['site_addby'] = val[14]
+                    vTmp['site_description'] = val[15]
                 jsondata.append(vTmp)
             return jsonify(jsondata)
         except Exception as e:
@@ -460,35 +532,55 @@ class PersonsRankDate(Resource):
 
 class PersonsRankDateById(Resource):
     def get(self, persons_id):
+        vTmp = {}
         jsondata = []
-        conn = mysql.connect()
+        vTmp['success'] = 0
 
+        groupby = request.args.get("groupby", "")
+        siteid = int(request.args.get("siteID", 0))
         _from = request.args.get('_from', 1)
         _till = request.args.get('_till', 1)
-
-        query = "select * from persons as ps left join personspagerank as ppr ON ppr.`PersonID` = ps.ID left join pages \
-                    as pg ON pg.ID = ppr.PageID left join sites as st ON st.`ID` = pg.`siteID` \
-                where DATE(pg.`lastScanDate`) >=  '{}' AND DATE(pg.lastScanDAte) <= '{}' and ps.ID = {}".format(_from, _till, persons_id)
+        conn = mysql.connect()
         cursor = conn.cursor()
-
+        if groupby == 'siteID':
+            where = " WHERE "
+            if siteid > 0:
+                where = where + "st.ID = %d AND " % int(siteid)
+            where = where + " pg.`lastScanDate` BETWEEN '{}' AND '{}' AND ps.ID = {}".format(_from, _till, persons_id)
+            query = "select ps.*, st.*, sum(ppr.Rank) as rank from persons as ps left join personspagerank as ppr " \
+                  "ON ppr.`PersonID` = ps.ID left join pages as pg ON pg.ID = ppr.PageID left join sites as st " \
+                  "ON st.`ID` = pg.`siteID`" + where + " group by ps.ID, ppr.`PersonID`, st.ID"
+        else:
+            query = "select * from persons as ps left join personspagerank as ppr ON ppr.`PersonID` = ps.ID left join pages \
+                    as pg ON pg.ID = ppr.PageID left join sites as st ON st.`ID` = pg.`siteID` \
+                where  pg.`lastScanDate` BETWEEN '{}' AND '{}' AND ps.ID = {}".format(_from, _till, persons_id)
         try:
             cursor.execute(query)
             for val in cursor.fetchall():
                 vTmp = {}
-                vTmp['person_id'] = val[0]
-                vTmp['person_name'] = val[1]
-                vTmp['person_addby'] = val[2]
-                vTmp['page_id'] = val[4]
-                vTmp['rank'] = val[5]
-                vTmp['person_page_id'] = val[7]
-                vTmp['page_url'] = val[8]
-                vTmp['page_site_id'] = val[9]
-                vTmp['site_found_date'] = val[10]
-                vTmp['site_last_scan_date'] = val[11]
-                vTmp['site_id'] = val[12]
-                vTmp['site_name'] = val[13]
-                vTmp['site_addby'] = val[14]
-                vTmp['site_description'] = val[15]
+                if groupby:
+                    vTmp['id'] = val[0]
+                    vTmp['person_name'] = val[1]
+                    vTmp['person_addby'] = val[2]
+                    vTmp['site_id'] = val[3]
+                    vTmp['site_name'] = val[4]
+                    vTmp['site_addby'] = val[5]
+                    vTmp['person_rank'] = str(val[7])
+                else:
+                    vTmp['person_id'] = val[0]
+                    vTmp['person_name'] = val[1]
+                    vTmp['person_addby'] = val[2]
+                    vTmp['page_id'] = val[4]
+                    vTmp['rank'] = val[5]
+                    vTmp['person_page_id'] = val[7]
+                    vTmp['page_url'] = val[8]
+                    vTmp['page_site_id'] = val[9]
+                    vTmp['site_found_date'] = val[10]
+                    vTmp['site_last_scan_date'] = val[11]
+                    vTmp['site_id'] = val[12]
+                    vTmp['site_name'] = val[13]
+                    vTmp['site_addby'] = val[14]
+                    vTmp['site_description'] = val[15]
                 jsondata.append(vTmp)
             return jsonify(jsondata)
         except Exception as e:
