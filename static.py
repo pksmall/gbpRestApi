@@ -1,4 +1,27 @@
+from modules.appdb import *
+
+AUTHIGNORE = False
 LOGINTIME = 30
+
+
+def checkTokenUser(token):
+    parent_id = 0
+
+    conn = mysql.connect()
+    cursor = conn.cursor()
+
+    query = "select * from users where token = '{}' and isAdmin = 1 and " \
+        "tokenLastAccess > NOW() - INTERVAL {} MINUTE;".format(token, LOGINTIME)
+    try:
+        cursor.execute(query)
+        if cursor.rowcount == 1:
+            for userValue in cursor.fetchall():
+                parent_id = userValue[0]
+                break
+            return parent_id
+    except Exception as e:
+        return parent_id
+
 
 ERR404 = {
         'success': '0',

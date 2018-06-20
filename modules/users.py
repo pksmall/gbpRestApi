@@ -1,22 +1,36 @@
 from flask import request, jsonify
 from modules.appdb import *
-from static import LOGINTIME
+from static import LOGINTIME, checkTokenUser, AUTHIGNORE
 
 
 class Users(Resource):
     def get(self):
         jsondata = []
+        vTmp = {}
+        vTmp['success'] = 0
+
+        token = request.args.get("token_auth", "")
+        admin_id = checkTokenUser(token)
+
+        if admin_id == 0 and AUTHIGNORE is False:
+            return jsonify(vTmp)
+
         conn = mysql.connect()
         cursor = conn.cursor()
-        query = "select * from users"
+
+        if AUTHIGNORE:
+            query = "select * from users "
+        else:
+            query = "select * from users where parentID >= %d" % int(admin_id)
+
         cursor.execute(query)
         for val in cursor.fetchall():
             vTmp = {}
-            vTmp['id'] = val[0]
-            vTmp['login'] = val[3]
-            vTmp['email'] = val[5]
-            vTmp['isadmin'] = val[2]
-            vTmp['addby'] = val[1]
+            vTmp['user_id'] = val[0]
+            vTmp['user_login'] = val[3]
+            vTmp['user_email'] = val[5]
+            vTmp['user_isadmin'] = val[2]
+            vTmp['user_addby'] = val[1]
             jsondata.append(vTmp)
         return jsonify(jsondata)
 
@@ -221,20 +235,37 @@ class Users(Resource):
 
 class UsersByID(Resource):
     def get(self, user_id):
+        vTmp = {}
+        vTmp['success'] = 0
+
+        token = request.args.get("token_auth", "")
+        admin_id = checkTokenUser(token)
+
+        if admin_id == 0 and AUTHIGNORE is False:
+            return jsonify(vTmp)
+
         conn = mysql.connect()
         cursor = conn.cursor()
-        query = "select * from users where ID = %d " % int(user_id)
 
+        if AUTHIGNORE:
+            query = "select * from users where ID = %d " % int(user_id)
+        else:
+            if int(user_id) == int(admin_id):
+                query = "select * from users where ID = %d " % int(user_id)
+            else:
+                query = "select * from users where ID = {} and parentID >= {}".format(user_id, admin_id)
+
+        print(query)
         try:
             cursor.execute(query)
             for val in cursor.fetchall():
                 result = {}
-                result['id'] = val[0]
-                result['login'] = val[3]
-                result['email'] = val[5]
-                result['isadmin'] = val[2]
-                result['addby'] = val[1]
+                result['user_id'] = val[0]
+                result['user_login'] = val[3]
+                result['user_email'] = val[5]
+                result['user_isadmin'] = val[2]
+                result['user_addby'] = val[1]
             return jsonify(result)
         except:
-            return jsonify({'message': 'User not found.'})
+            return jsonify(vTmp)
 
