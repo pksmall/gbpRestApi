@@ -18,21 +18,24 @@ class Users(Resource):
         conn = mysql.connect()
         cursor = conn.cursor()
 
-        if AUTHIGNORE:
-            query = "select * from users "
-        else:
-            query = "select * from users where parentID >= %d" % int(admin_id)
+        try:
+            if AUTHIGNORE:
+                query = "select * from users "
+            else:
+                query = "select * from users where parentID >= %d" % int(admin_id)
 
-        cursor.execute(query)
-        for val in cursor.fetchall():
-            vTmp = {}
-            vTmp['user_id'] = val[0]
-            vTmp['user_login'] = val[3]
-            vTmp['user_email'] = val[5]
-            vTmp['user_isadmin'] = val[2]
-            vTmp['user_addby'] = val[1]
-            jsondata.append(vTmp)
-        return jsonify(jsondata)
+            cursor.execute(query)
+            for val in cursor.fetchall():
+                vTmp = {}
+                vTmp['user_id'] = val[0]
+                vTmp['user_login'] = val[3]
+                vTmp['user_email'] = val[5]
+                vTmp['user_isadmin'] = val[2]
+                vTmp['user_addby'] = val[1]
+                jsondata.append(vTmp)
+            return jsonify(jsondata)
+        except:
+            return jsonify(vTmp)
 
     def post(self):
         vTmp = {}
@@ -50,7 +53,6 @@ class Users(Resource):
 
                 query = "select * from users where token = '{}' and isAdmin = 1 and " \
                         "tokenLastAccess > NOW() - INTERVAL {} MINUTE;".format(token, LOGINTIME)
-                print(query)
                 try:
                     cursor.execute(query)
                     if cursor.rowcount == 1:
@@ -74,7 +76,6 @@ class Users(Resource):
         try:
             query = "insert into users (parentID, isAdmin, login, password, email) values('{}','{}'," \
                     "'{}','{}','{}')".format(parent_id, is_admin, login, password, email)
-            print(query)
             cursor.execute(query)
             conn.commit()
             vTmp["user_id"] = cursor.lastrowid
@@ -94,7 +95,6 @@ class Users(Resource):
         vTmp['success'] = 0
         parent_id = 0
 
-        print(request.json)
         try:
             if not request.json:
                 return jsonify(vTmp)
@@ -159,7 +159,6 @@ class Users(Resource):
                     query = query + ", "
                 query = query + "isAdmin = {} ".format(is_admin)
             query = query + "WHERE ID = {} ".format(user_id)
-            print(query)
             cursor.execute(query)
             conn.commit()
 
@@ -178,7 +177,6 @@ class Users(Resource):
         vTmp['success'] = 0
         parent_id = 0
 
-        print(request.json)
         try:
             if not request.json:
                 return jsonify(vTmp)
@@ -247,25 +245,26 @@ class UsersByID(Resource):
         conn = mysql.connect()
         cursor = conn.cursor()
 
-        if AUTHIGNORE:
-            query = "select * from users where ID = %d " % int(user_id)
-        else:
-            if int(user_id) == int(admin_id):
+        try:
+            if AUTHIGNORE:
                 query = "select * from users where ID = %d " % int(user_id)
             else:
-                query = "select * from users where ID = {} and parentID >= {}".format(user_id, admin_id)
-
-        print(query)
-        try:
-            cursor.execute(query)
-            for val in cursor.fetchall():
-                result = {}
-                result['user_id'] = val[0]
-                result['user_login'] = val[3]
-                result['user_email'] = val[5]
-                result['user_isadmin'] = val[2]
-                result['user_addby'] = val[1]
-            return jsonify(result)
+                if int(user_id) == int(admin_id):
+                    query = "select * from users where ID = %d " % int(user_id)
+                else:
+                    query = "select * from users where ID = {} and parentID >= {}".format(user_id, admin_id)
+            try:
+                cursor.execute(query)
+                for val in cursor.fetchall():
+                    result = {}
+                    result['user_id'] = val[0]
+                    result['user_login'] = val[3]
+                    result['user_email'] = val[5]
+                    result['user_isadmin'] = val[2]
+                    result['user_addby'] = val[1]
+                return jsonify(result)
+            except:
+                return jsonify(vTmp)
         except:
             return jsonify(vTmp)
 

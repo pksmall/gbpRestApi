@@ -1,22 +1,39 @@
 from flask import request, jsonify
 from modules.appdb import *
-from static import  LOGINTIME
+from static import LOGINTIME, AUTHIGNORE, checkTokenUser
 
 class Sites(Resource):
     def get(self):
         jsondata = []
+        vTmp = {}
+        vTmp['success'] = 0
+
+        token = request.args.get("token_auth", "")
+        admin_id = checkTokenUser(token)
+
+        if admin_id == 0 and AUTHIGNORE is False:
+            return jsonify(vTmp)
+
         conn = mysql.connect()
         cursor = conn.cursor()
-        query = "select * from sites;"
-        cursor.execute(query)
-        for val in cursor.fetchall():
-            vTmp = {}
-            vTmp['id'] = val[0]
-            vTmp['addby'] = val[2]
-            vTmp['name'] = val[1]
-            vTmp['siteDescription'] = val[3]
-            jsondata.append(vTmp)
-        return jsonify(jsondata)
+
+        try:
+            if AUTHIGNORE:
+                query = "select * from sites;"
+            else:
+                query = "select * from sites where addedBy >= {}".format(admin_id)
+
+            cursor.execute(query)
+            for val in cursor.fetchall():
+                vTmp = {}
+                vTmp['site_id'] = val[0]
+                vTmp['site_addby'] = val[2]
+                vTmp['site_name'] = val[1]
+                vTmp['site_siteDescription'] = val[3]
+                jsondata.append(vTmp)
+            return jsonify(jsondata)
+        except:
+            return jsonify(vTmp)
 
     def post(self):
         vTmp = {}
@@ -34,7 +51,6 @@ class Sites(Resource):
 
                 query = "select * from users where token = '{}' and " \
                         "tokenLastAccess > NOW() - INTERVAL {} MINUTE;".format(token, LOGINTIME)
-                print(query)
                 try:
                     cursor.execute(query)
                     if cursor.rowcount == 1:
@@ -59,12 +75,11 @@ class Sites(Resource):
 
         try:
             query = "insert into sites (addedBy, name, siteDescription) values({}, '{}', '{}')".format(parent_id, name, description)
-            print(query)
             cursor.execute(query)
             conn.commit()
             vTmp["site_id"] = cursor.lastrowid
 
-            query = "insert into pages (URL, siteID, foundDateTime) values({}, '{}',  now())".format(pageURL, vTmp['site_id'])
+            query = "insert into pages (URL, siteID, foundDateTime) values('{}', '{}',  now())".format(pageURL, vTmp['site_id'])
             cursor.execute(query)
             conn.commit()
 
@@ -133,7 +148,6 @@ class Sites(Resource):
                     query = query + ", "
                 query = query + "siteDescription= '{}' ".format(description)
             query = query + "WHERE ID = {} ".format(site_id)
-            print(query)
             cursor.execute(query)
             conn.commit()
 
@@ -208,17 +222,34 @@ class Sites(Resource):
 
 class SiteByID(Resource):
     def get(self, site_id):
+        vTmp = {}
+        vTmp['success'] = 0
+
+        token = request.args.get("token_auth", "")
+        admin_id = checkTokenUser(token)
+
+        if admin_id == 0 and AUTHIGNORE is False:
+            return jsonify(vTmp)
+
         conn = mysql.connect()
-        query = "select * from sites where ID =%d " % int(site_id)
-        cursor = conn.cursor()
+
         try:
+            if AUTHIGNORE:
+                query = "select * from sites where ID =%d " % int(site_id)
+            else:
+                if int(site_id) == int(admin_id):
+                    query = "select * from sites where ID = %d " % int(site_id)
+                else:
+                    query = "select * from sites where ID = {} and addedBy >= {} ".format(site_id, admin_id)
+
+            cursor = conn.cursor()
             cursor.execute(query)
             for val in cursor.fetchall():
                 result = {}
-                result['id'] = val[0]
-                result['addby'] = val[2]
-                result['name'] = val[1]
-                result['siteDescription'] = val[3]
+                result['site_id'] = val[0]
+                result['site_addby'] = val[2]
+                result['site_name'] = val[1]
+                result['site_siteDescription'] = val[3]
             return jsonify(result)
-        except Exception as e:
-            return jsonify({'message': 'Site not found.' + str(e)})
+        except:
+            return jsonify(vTmp)
