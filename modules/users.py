@@ -20,7 +20,7 @@ class Users(Resource):
 
         try:
             if AUTHIGNORE:
-                query = "select * from users "
+                query = "select * from users"
             else:
                 query = "select * from users where parentID >= %d" % int(admin_id)
 
@@ -32,9 +32,10 @@ class Users(Resource):
                 vTmp['user_email'] = val[5]
                 vTmp['user_isadmin'] = val[2]
                 vTmp['user_addby'] = val[1]
+                vTmp['user_password'] = val[4]
                 jsondata.append(vTmp)
             return jsonify(jsondata)
-        except:
+        except Exception as e:
             return jsonify(vTmp)
 
     def post(self):
@@ -262,6 +263,7 @@ class UsersByID(Resource):
                     result['user_email'] = val[5]
                     result['user_isadmin'] = val[2]
                     result['user_addby'] = val[1]
+                    result['user_password'] = val[4]
                 return jsonify(result)
             except:
                 return jsonify(vTmp)

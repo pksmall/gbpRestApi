@@ -25,7 +25,7 @@ class Auth(Resource):
         conn = mysql.connect()
         cursor = conn.cursor()
 
-        query = "select * from users where login = '{}' and password = '{}' and \
+        query = "select * from users where lower(login) = '{}' and password = '{}' and \
                     (token is NULL or tokenLastAccess < NOW() - INTERVAL {} MINUTE);".format(login, password, LOGINTIME)
         cursor.execute(query)
         try:
