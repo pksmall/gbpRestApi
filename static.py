@@ -2,7 +2,7 @@ from modules.appdb import *
 
 AUTHIGNORE = False
 LOGINTIME = 30
-
+LIMITPAGE = 10
 
 def checkTokenUser(token):
     parent_id = 0
@@ -18,6 +18,8 @@ def checkTokenUser(token):
             for userValue in cursor.fetchall():
                 parent_id = userValue[0]
                 break
+            return parent_id
+        else:
             return parent_id
     except Exception as e:
         return parent_id
