@@ -47,8 +47,12 @@ class Pages(Resource):
                 vTmp['page_site_id'] = val[2]
                 vTmp['page_found_date_str'] = val[3]
                 vTmp['page_last_scan_date_str'] = val[4]
-                vTmp['page_found_date'] = val[9]
-                vTmp['page_last_scan_date'] = val[10]
+                if AUTHIGNORE:
+                    vTmp['page_found_date'] = val[5]
+                    vTmp['page_last_scan_date'] = val[6]
+                else:
+                    vTmp['page_found_date'] = val[9]
+                    vTmp['page_last_scan_date'] = val[10]
                 jsondata.append(vTmp)
             return jsonify(jsondata)
         except Exception as e:
@@ -288,8 +292,12 @@ class PagesByID(Resource):
                 vTmp['page_site_id'] = val[2]
                 vTmp['page_found_date_str'] = val[3]
                 vTmp['page_last_scan_date_str'] = val[4]
-                vTmp['page_found_date'] = val[9]
-                vTmp['page_last_scan_date'] = val[10]
+                if AUTHIGNORE:
+                    vTmp['page_found_date'] = val[5]
+                    vTmp['page_last_scan_date'] = val[6]
+                else:
+                    vTmp['page_found_date'] = val[9]
+                    vTmp['page_last_scan_date'] = val[10]
             return jsonify(vTmp)
         except:
             return jsonify(vTmp)

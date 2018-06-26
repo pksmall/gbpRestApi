@@ -1,6 +1,6 @@
 from modules.appdb import *
 
-AUTHIGNORE = False
+AUTHIGNORE = True
 LOGINTIME = 30
 LIMITPAGE = 10
 
