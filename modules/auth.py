@@ -15,11 +15,13 @@ class Auth(Resource):
 
         try:
             if not request.json:
+                vTmp['message'] = "Request not json format."
                 return jsonify(vTmp)
             else:
                 login = request.json['user']
                 password = request.json['password']
-        except:
+        except Exception as e:
+            vTmp['message'] = "POST not json format." + str(e)
             return jsonify(vTmp)
 
         conn = mysql.connect()
