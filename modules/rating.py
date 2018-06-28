@@ -31,7 +31,7 @@ class Rating(Resource):
             groupby = " DAY(pg.foundDateTime) "
             if AUTHIGNORE:
                 where = "WHERE pg.`foundDateTime` BETWEEN '{}' AND '{}' ".format(_from, _till)
-                query = "select ps.*, st.*, sum(ppr.Rank) as rank, DATE_FORMAT(pg.lastScanDate,'%Y-%m-%d')" \
+                query = "select ps.*, st.*, sum(ppr.Rank) as rank, DATE_FORMAT(pg.foundDateTime,'%Y-%m-%d')" \
                         " from persons as ps left join personspagerank as ppr " \
                       "ON ppr.`PersonID` = ps.ID left join pages as pg ON pg.ID = ppr.PageID left join sites as st " \
                       "ON st.`ID` = pg.`siteID`" + where + " group by ps.ID, ppr.`PersonID`, st.ID," + groupby
