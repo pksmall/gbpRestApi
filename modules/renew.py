@@ -19,13 +19,13 @@ class Renew(Resource):
 
         try:
             if AUTHIGNORE:
-                query = "select UNIX_TIMESTAMP(min(pg.lastScanDate)) as minDate, UNIX_TIMESTAMP(max(pg.lastScanDate)) " \
+                query = "select UNIX_TIMESTAMP(min(pg.foundDateTime)) as minDate, UNIX_TIMESTAMP(max(pg.foundDateTime)) " \
                         "as maxDate from persons as ps left join personspagerank as ppr ON ppr.`PersonID` = ps.ID " \
                         "left join pages as pg ON pg.ID = ppr.PageID " \
                         "left join sites as st ON st.`ID` = pg.`siteID`"
             else:
                 where = "WHERE st.addedBy >= {}".format(admin_id)
-                query = "select UNIX_TIMESTAMP(min(pg.lastScanDate)) as minDate, UNIX_TIMESTAMP(max(pg.lastScanDate)) " \
+                query = "select UNIX_TIMESTAMP(min(pg.foundDateTime)) as minDate, UNIX_TIMESTAMP(max(pg.foundDateTime)) " \
                         "as maxDate from persons as ps left join personspagerank as ppr ON ppr.`PersonID` = ps.ID " \
                         "left join pages as pg ON pg.ID = ppr.PageID " \
                         "left join sites as st ON st.`ID` = pg.`siteID`" + where
