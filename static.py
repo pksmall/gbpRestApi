@@ -1,6 +1,6 @@
 from modules.appdb import *
 
-AUTHIGNORE = True
+AUTHIGNORE = False
 LOGINTIME = 30
 LIMITPAGE = 10
 
@@ -10,13 +10,13 @@ def checkTokenUser(token):
     conn = mysql.connect()
     cursor = conn.cursor()
 
-    query = "select * from users where token = '{}' and isAdmin = 1 and " \
+    query = "select * from users where token = '{}' and " \
         "tokenLastAccess > NOW() - INTERVAL {} MINUTE;".format(token, LOGINTIME)
     try:
         cursor.execute(query)
         if cursor.rowcount == 1:
             for userValue in cursor.fetchall():
-                parent_id = userValue[0]
+                parent_id = userValue[1]
                 break
             return parent_id
         else:

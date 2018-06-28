@@ -29,6 +29,7 @@ class Renew(Resource):
                         "as maxDate from persons as ps left join personspagerank as ppr ON ppr.`PersonID` = ps.ID " \
                         "left join pages as pg ON pg.ID = ppr.PageID " \
                         "left join sites as st ON st.`ID` = pg.`siteID`" + where
+            print(query)
             cursor.execute(query)
             for val in cursor.fetchall():
                 vTmp = {}

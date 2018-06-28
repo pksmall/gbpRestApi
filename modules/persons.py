@@ -572,9 +572,10 @@ class PersonsRankDate(Resource):
                 where = where + " pg.`foundDateTime` BETWEEN '{}' AND '{}' ".format(_from, _till)
                 query = "select ps.*, st.*, sum(ppr.Rank) as rank from persons as ps left join personspagerank as ppr " \
                       "ON ppr.`PersonID` = ps.ID left join pages as pg ON pg.ID = ppr.PageID left join sites as st " \
-                      "ON st.`ID` = pg.`siteID`" + where + " group by ps.ID, ppr.`PersonID`, st.ID"
+                      "ON st.`ID` = pg.`siteID` " + where + " group by ps.ID, ppr.`PersonID`, st.ID"
             else:
-               query = "select *,UNIX_TIMESTAMP(foundDatetime),UNIX_TIMESTAMP(lastScanDate) from persons as ps left join personspagerank as ppr ON ppr.`PersonID` = ps.ID left join pages \
+               query = "select *,UNIX_TIMESTAMP(foundDatetime),UNIX_TIMESTAMP(lastScanDate) from persons as ps " \
+                       "left join personspagerank as ppr ON ppr.`PersonID` = ps.ID left join pages \
                         as pg ON pg.ID = ppr.PageID left join sites as st ON st.`ID` = pg.`siteID` \
                     where pg.foundDateTime BETWEEN '{}' AND '{}'".format(_from, _till)
                if AUTHIGNORE is False:
