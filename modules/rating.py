@@ -11,14 +11,40 @@ class Rating(Resource):
 
         _from = request.args.get('_from', "19760101")
         _till = request.args.get('_till', "21000101")
-        _persons = request.args.get('_persons', "")
-        _sites = request.args.get('_sites', "")
+        _persons = request.args.get('_persons', "").split(',')
+        _sites = request.args.get('_sites', "").split(',')
         _groupdate = request.args.get('_groupdate', "day")
 
         token = request.args.get("token_auth", "")
         admin_id = checkTokenUser(token)
         if admin_id == 0 and AUTHIGNORE is False:
             return jsonify(vTmp)
+
+        mAnd = "OR "
+        personsWhere = ""
+        for v in _persons:
+            if v != "":
+                if personsWhere == "":
+                    personsWhere = " AND ("
+                    personsWhere = personsWhere + "ps.name = '" + v + "' "
+                else:
+                    personsWhere = personsWhere + mAnd + "ps.name = '" + v + "' "
+        if personsWhere != "":
+            personsWhere = personsWhere + ")"
+
+        sitesWhere = ""
+        for v in _sites:
+            if v != "":
+                if sitesWhere == "":
+                    sitesWhere = " AND ("
+                    sitesWhere = sitesWhere + "st.name = '" + v + "' "
+                else:
+                    sitesWhere = sitesWhere + mAnd + "st.name = '" + v + "' "
+        if sitesWhere != "":
+            sitesWhere = sitesWhere + ")"
+
+        print(personsWhere)
+        print(sitesWhere)
 
         conn = mysql.connect()
         cursor = conn.cursor()
@@ -34,7 +60,7 @@ class Rating(Resource):
                 query = "select ps.*, st.*, sum(ppr.Rank) as rank, DATE_FORMAT(pg.foundDateTime,'%Y-%m-%d')" \
                         " from persons as ps left join personspagerank as ppr " \
                       "ON ppr.`PersonID` = ps.ID left join pages as pg ON pg.ID = ppr.PageID left join sites as st " \
-                      "ON st.`ID` = pg.`siteID`" + where + " group by ps.ID, ppr.`PersonID`, st.ID," + groupby
+                      "ON st.`ID` = pg.`siteID`" + where + " " + personsWhere + " " + sitesWhere + " group by ps.ID, ppr.`PersonID`, st.ID," + groupby
             else:
                 """pg.lastScanDate"""
                 query = "select ps.*, st.*, sum(ppr.Rank) as rank, DATE_FORMAT(pg.foundDateTime,'%Y-%m-%d') from persons as ps " \
@@ -42,6 +68,7 @@ class Rating(Resource):
                     "left join sites as st ON st.`ID` = pg.`siteID` " \
                     "where pg.`foundDateTime` BETWEEN '{}' AND '{}' ".format(_from, _till)
                 query = query + " AND st.addedBy >= %d " % int(admin_id)
+                query = query + " " + personsWhere + " " + sitesWhere
                 query = query + " GROUP BY ps.ID, ppr.`PersonID`, st.ID," + groupby
 
             print(query)
