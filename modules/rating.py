@@ -43,9 +43,6 @@ class Rating(Resource):
         if sitesWhere != "":
             sitesWhere = sitesWhere + ")"
 
-        print(personsWhere)
-        print(sitesWhere)
-
         conn = mysql.connect()
         cursor = conn.cursor()
         try:
@@ -71,7 +68,6 @@ class Rating(Resource):
                 query = query + " " + personsWhere + " " + sitesWhere
                 query = query + " GROUP BY ps.ID, ppr.`PersonID`, st.ID," + groupby
 
-            print(query)
             cursor.execute(query)
             for val in cursor.fetchall():
                 vTmp = {}
