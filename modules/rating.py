@@ -47,20 +47,24 @@ class Rating(Resource):
         cursor = conn.cursor()
         try:
             if _groupdate == 'month':
-                groupby = " MONTH(pg.lastScanDate) "
-            if _groupdate == 'year':
-                groupby = " YEAR(pg.lastScanDate) "
+                groupby = " MONTH(pg.foundDateTime) "
+                _dateformat = " DATE_FORMAT(pg.foundDateTime,'%Y-%m') "
+            elif _groupdate == 'year':
+                groupby = " YEAR(pg.foundDateTime) "
+                _dateformat = " DATE_FORMAT(pg.foundDateTime,'%Y') "
+            else:
+                groupby = " DAY(pg.foundDateTime) "
+                _dateformat = " DATE_FORMAT(pg.foundDateTime,'%Y-%m-%d') "
 
-            groupby = " DAY(pg.foundDateTime) "
             if AUTHIGNORE:
                 where = "WHERE pg.`foundDateTime` BETWEEN '{}' AND '{}' ".format(_from, _till)
-                query = "select ps.*, st.*, sum(ppr.Rank) as rank, DATE_FORMAT(pg.foundDateTime,'%Y-%m-%d')" \
+                query = "select ps.*, st.*, sum(ppr.Rank) as rank, " + _dateformat + \
                         " from persons as ps left join personspagerank as ppr " \
                       "ON ppr.`PersonID` = ps.ID left join pages as pg ON pg.ID = ppr.PageID left join sites as st " \
                       "ON st.`ID` = pg.`siteID`" + where + " " + personsWhere + " " + sitesWhere + " group by ps.ID, ppr.`PersonID`, st.ID," + groupby
             else:
                 """pg.lastScanDate"""
-                query = "select ps.*, st.*, sum(ppr.Rank) as rank, DATE_FORMAT(pg.foundDateTime,'%Y-%m-%d') from persons as ps " \
+                query = "select ps.*, st.*, sum(ppr.Rank) as rank, " + _dateformat + " from persons as ps " \
                     "left join personspagerank as ppr ON ppr.`PersonID` = ps.ID left join pages as pg ON pg.ID = ppr.PageID " \
                     "left join sites as st ON st.`ID` = pg.`siteID` " \
                     "where pg.`foundDateTime` BETWEEN '{}' AND '{}' ".format(_from, _till)
@@ -68,6 +72,7 @@ class Rating(Resource):
                 query = query + " " + personsWhere + " " + sitesWhere
                 query = query + " GROUP BY ps.ID, ppr.`PersonID`, st.ID," + groupby
 
+            print(query)
             cursor.execute(query)
             for val in cursor.fetchall():
                 vTmp = {}
