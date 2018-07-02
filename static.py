@@ -12,16 +12,21 @@ def checkTokenUser(token):
 
     query = "select * from users where token = '{}' and " \
         "tokenLastAccess > NOW() - INTERVAL {} MINUTE;".format(token, LOGINTIME)
+    print(query)
     try:
         cursor.execute(query)
         if cursor.rowcount == 1:
             for userValue in cursor.fetchall():
-                parent_id = userValue[1]
+                if userValue[1] is None:
+                    parent_id = userValue[0]
+                else:
+                    parent_id = userValue[1]
                 break
             return parent_id
         else:
             return parent_id
     except Exception as e:
+        print(str(e))
         return parent_id
 
 
