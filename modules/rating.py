@@ -9,9 +9,11 @@ class Rating(Resource):
         jsondata = []
         vTmp['success'] = 0
 
+        print(request)
         _from = request.args.get('_from', "19760101")
         _till = request.args.get('_till', "21000101")
         _persons = request.args.get('_persons', "").split(',')
+        _personids = request.args.get('_personids', "").split(',')
         _sites = request.args.get('_sites', "").split(',')
         _groupdate = request.args.get('_groupdate', "day")
 
@@ -22,15 +24,28 @@ class Rating(Resource):
 
         mAnd = "OR "
         personsWhere = ""
-        for v in _persons:
-            if v != "":
-                if personsWhere == "":
-                    personsWhere = " AND ("
-                    personsWhere = personsWhere + "ps.name = '" + v + "' "
-                else:
-                    personsWhere = personsWhere + mAnd + "ps.name = '" + v + "' "
-        if personsWhere != "":
-            personsWhere = personsWhere + ")"
+        print(len(_personids))
+        print(_personids)
+        if not all(_personids):
+            for v in _persons:
+                if v != "":
+                    if personsWhere == "":
+                        personsWhere = " AND ("
+                        personsWhere = personsWhere + "ps.name = '" + v + "' "
+                    else:
+                        personsWhere = personsWhere + mAnd + "ps.name = '" + v + "' "
+            if personsWhere != "":
+                personsWhere = personsWhere + ")"
+        else:
+            for v in _personids:
+                if v != "":
+                    if personsWhere == "":
+                        personsWhere = " AND ("
+                        personsWhere = personsWhere + "ps.id = " + v + " "
+                    else:
+                        personsWhere = personsWhere + mAnd + "ps.id = " + v + " "
+            if personsWhere != "":
+                personsWhere = personsWhere + ")"
 
         sitesWhere = ""
         for v in _sites:
@@ -64,7 +79,7 @@ class Rating(Resource):
                       "ON st.`ID` = pg.`siteID`" + where + " " + personsWhere + " " + sitesWhere + " group by ps.ID, ppr.`PersonID`, st.ID," + groupby
             else:
                 """pg.lastScanDate"""
-                query = "select ps.*, st.*, sum(ppr.Rank) as rank, " + _dateformat + " from persons as ps " \
+                query = "select  st.*, ps.*, sum(ppr.Rank) as rank, " + _dateformat + " from persons as ps " \
                     "left join personspagerank as ppr ON ppr.`PersonID` = ps.ID left join pages as pg ON pg.ID = ppr.PageID " \
                     "left join sites as st ON st.`ID` = pg.`siteID` " \
                     "where pg.`foundDateTime` BETWEEN '{}' AND '{}' ".format(_from, _till)
