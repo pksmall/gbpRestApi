@@ -24,8 +24,6 @@ class Rating(Resource):
 
         mAnd = "OR "
         personsWhere = ""
-        print(len(_personids))
-        print(_personids)
         if not all(_personids):
             for v in _persons:
                 if v != "":
