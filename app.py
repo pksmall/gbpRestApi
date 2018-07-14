@@ -6,6 +6,7 @@ from modules.pages import *
 from modules.renew import *
 from modules.rating import *
 from modules.auth import *
+from modules.logs import *
 
 class Info(Resource):
     def get(self):
@@ -39,6 +40,7 @@ api.add_resource(Pages, '/v1/pages')
 api.add_resource(PagesByID, '/v1/pages/<page_id>')
 api.add_resource(Renew, '/v1/renew')
 api.add_resource(Rating, '/v1/rating')
+api.add_resource(Logs, '/v1/logs')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

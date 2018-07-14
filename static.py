@@ -30,6 +30,18 @@ def checkTokenUser(token):
         return parent_id
 
 
+def insertLog(id, message):
+    conn = mysql.connect()
+    cursor = conn.cursor()
+
+    query = "INSERT INTO log (adminID, action) VALUES ({}, '{}')".format(id, message)
+    print(query)
+    try:
+        cursor.execute(query)
+        conn.commit()
+    except Exception as e:
+        print(e)
+
 ERR404 = {
         'success': '0',
         'message': '404'

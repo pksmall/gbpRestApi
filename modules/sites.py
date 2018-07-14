@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from modules.appdb import *
-from static import LOGINTIME, AUTHIGNORE, checkTokenUser
+from static import LOGINTIME, AUTHIGNORE, checkTokenUser, insertLog
 
 class Sites(Resource):
     def get(self):
@@ -87,6 +87,8 @@ class Sites(Resource):
             cursor.execute(query)
             conn.commit()
 
+            insertLog(parent_id, "Добавлена сайт {}".format(name))
+
             vTmp['success'] = 1
             return jsonify(vTmp)
         except Exception as e:
@@ -155,6 +157,8 @@ class Sites(Resource):
             cursor.execute(query)
             conn.commit()
 
+            insertLog(parent_id, "Изменил сайт id {}".format(site_id))
+
             vTmp['success'] = 1
             return jsonify(vTmp)
         except Exception as e:
@@ -212,6 +216,8 @@ class Sites(Resource):
             query = "UPDATE users SET token = '{}', tokenLastAccess = now() WHERE ID = {}".format(token, parent_id)
             cursor.execute(query)
             conn.commit()
+
+            insertLog(parent_id, "Удалил сайт id {}".format(site_id))
 
             vTmp['success'] = 1
             return jsonify(vTmp)

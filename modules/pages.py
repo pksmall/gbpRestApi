@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from modules.appdb import *
-from static import LOGINTIME, checkTokenUser, AUTHIGNORE, LIMITPAGE
+from static import LOGINTIME, checkTokenUser, AUTHIGNORE, LIMITPAGE, insertLog
 
 
 class Pages(Resource):
@@ -114,6 +114,8 @@ class Pages(Resource):
             cursor.execute(query)
             conn.commit()
 
+            insertLog(parent_id, "Добавлена страница c url {}".format(page_url))
+
             vTmp['success'] = 1
             return jsonify(vTmp)
         except Exception as e:
@@ -193,6 +195,8 @@ class Pages(Resource):
             cursor.execute(query)
             conn.commit()
 
+            insertLog(parent_id, "Изменил страницу id {}".format(page_id))
+
             vTmp['success'] = 1
             return jsonify(vTmp)
         except Exception as e:
@@ -250,6 +254,8 @@ class Pages(Resource):
             query = "UPDATE users SET token = '{}', tokenLastAccess = now() WHERE ID = {}".format(token, parent_id)
             cursor.execute(query)
             conn.commit()
+
+            insertLog(parent_id, "Удалил страницу id {}".format(page_id))
 
             vTmp['success'] = 1
             return jsonify(vTmp)

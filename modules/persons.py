@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from modules.appdb import *
-from static import LOGINTIME, checkTokenUser, AUTHIGNORE
+from static import LOGINTIME, checkTokenUser, AUTHIGNORE, insertLog
 
 
 class Persons(Resource):
@@ -82,6 +82,8 @@ class Persons(Resource):
             cursor.execute(query)
             conn.commit()
 
+            insertLog(parent_id, "Добавил персону {}".format(name))
+
             vTmp['success'] = 1
             return jsonify(vTmp)
         except Exception as e:
@@ -136,6 +138,8 @@ class Persons(Resource):
             query = "UPDATE users SET token = '{}', tokenLastAccess = now() WHERE ID = {}".format(token, parent_id)
             cursor.execute(query)
             conn.commit()
+
+            insertLog(parent_id, "Изменил персону c id {} на {}".format(person_id, name))
 
             vTmp['success'] = 1
             return jsonify(vTmp)
@@ -194,6 +198,8 @@ class Persons(Resource):
             query = "UPDATE users SET token = '{}', tokenLastAccess = now() WHERE ID = {}".format(token, parent_id)
             cursor.execute(query)
             conn.commit()
+
+            insertLog(parent_id, "Удалил персону с id {}".format(person_id))
 
             vTmp['success'] = 1
             return jsonify(vTmp)
@@ -255,6 +261,8 @@ class PersonsKeywords(Resource):
             cursor.execute(query)
             conn.commit()
 
+            insertLog(parent_id, "Добавил кейворд(ы) {}".format(keywords))
+
             vTmp['success'] = 1
             return jsonify(vTmp)
         except Exception as e:
@@ -308,6 +316,8 @@ class PersonsKeywords(Resource):
             query = "UPDATE users SET token = '{}', tokenLastAccess = now() WHERE ID = {}".format(token, parent_id)
             cursor.execute(query)
             conn.commit()
+
+            insertLog(parent_id, "Изменил кейворд id {}".format(keyword_id))
 
             vTmp['success'] = 1
             return jsonify(vTmp)
@@ -366,6 +376,8 @@ class PersonsKeywords(Resource):
             query = "UPDATE users SET token = '{}', tokenLastAccess = now() WHERE ID = {}".format(token, parent_id)
             cursor.execute(query)
             conn.commit()
+
+            insertLog(parent_id, "Удалил кейворд c id {}".format(keyword_id))
 
             vTmp['success'] = 1
             return jsonify(vTmp)
