@@ -1,7 +1,7 @@
 # gbpRestApi
 Internship REST API by GeekBrains 
 
-app's using python3.5+
+app's using python3
 
 ## docs 
 [RestAPI specification and descriptions](https://docs.google.com/document/d/1CG61gS6CEszK0CSh2-it8DcpH5IPVVKa3W6oqnVu3hk/edit?usp=sharing)
