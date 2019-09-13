@@ -9,15 +9,23 @@ app's using python3.5+
 ## run app 
 
 #### git clone
-```$ git clone https://github.com/pksmall/gbpRestApi.git```
+```bash
+git clone https://github.com/pksmall/gbpRestApi.git
+```
 
 
 #### install requirements
 
-```$ pip install -r requirements.txt```
+```bash
+pip install -r requirements.txt
+```
 
 #### app start
-```$ python app.py```
+```bash
+python3 app.py
+```
 
 #### get data
-```$ curl 127.0.0.1:5000/v1/persons/rank ```
+```bash
+curl 127.0.0.1:5000/v1/persons/rank
+```
